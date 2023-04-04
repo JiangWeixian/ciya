@@ -89,6 +89,7 @@
     "ci:publish": "pnpm run build && pnpm changeset publish",
     "ci:snapshot": "pnpm changeset version --snapshot beta",
     "ci:prerelease": "pnpm run build && pnpm changeset publish --tag beta",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "prepare": "husky install"
   }
 }
