@@ -1,11 +1,12 @@
 import { init, parse } from 'es-module-lexer'
 import { parse as tsconfckParse } from 'tsconfck'
 import fs from 'node:fs/promises'
-import { dirname, resolve } from 'node:path'
-import { normalize } from 'pathe'
-import { resolveProjectPaths } from './resolver'
-import { createResolver } from './tsconfig-paths'
+import { dirname } from 'node:path'
+import { normalize, resolve } from 'pathe'
 import { uniq } from 'lodash-es'
+
+import { createResolver, resolveProjectPaths } from './tsconfig-paths'
+import { debug } from './utils'
 
 interface Module {
   // Real filepath on disk
@@ -30,7 +31,18 @@ const isCircular = (url: string, urlStack: string[]) => {
 
 const isNodeModules = (url: string) => /node_modules/.test(url)
 
-export const createModuleGraph = async (importer: string, { root = process.cwd() }: { root: string }) => {
+export interface CreateModuleGraphOptions {
+  /**
+   * @default process.cwd()
+   */
+  root: string
+}
+
+export const createModuleGraph = async (importer: string, { root = process.cwd() }: CreateModuleGraphOptions) => {
+  const resolvedRoot = root
+  const resolvedOptions = {
+    entry: resolve(resolvedRoot, importer)
+  }
   const projects = await resolveProjectPaths(undefined, root, root)
   const moduleGraph = new Map<string, Module>()
   const parsedProjects = new Set(
@@ -55,13 +67,13 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
     while (projectDir && projectDir !== prevProjectDir) {
       // If tsconfig.json not found, use default resolver as fallback
       const resolvers = resolversByDir[projectDir] ?? [defaultResolver]
+      debug('%s resolver from project %s, ', resolversByDir[projectDir] ? 'found' : 'not-found', projectDir)
       if (resolvers) {
         for (const resolver of resolvers) {
           const [resolved, matched] = await resolver(
             id,
             importer,
           )
-          // console.log('in resolveId', resolved, matched)
           if (resolved) {
             return resolved
           }
@@ -108,8 +120,7 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
       module.imports = imports.map(i => source.slice(i.s, i.e))
       for (const id of module.imports) {
         const resolvedId = await resolveId(id, file)
-        // TODO: skip node_modules
-        console.log(id, resolvedId)
+        debug('resolve %s to %s', id, resolvedId)
         if (resolvedId && !isNodeModules(resolvedId)) {
           const m = ensureModule(resolvedId, {
             id,
@@ -124,8 +135,9 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
         // (should use set?)
         urlStack = uniq(urlStack.concat(file))
         m.urlStack = urlStack.concat([])
-        console.log(m.file, urlStack)
+        debug('file %s url stacks %o', m.file, urlStack)
         m.isCircular = isCircular(m.file, urlStack)
+        // TODO: reporter, or log circular info
         if (m.isCircular) {
           // Skip circular
           continue
@@ -134,18 +146,11 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
       }
     }
   }
-  const resolvedFilePath = resolve(root, importer)
   // create module graph
-  await dfs(resolvedFilePath)
-  console.log(moduleGraph)
+  await dfs(resolvedOptions.entry)
   return moduleGraph
 }
 
-// getImporters('/Users/bytedance/Projects/ciya/test/fixtures/basic/src/b/b.ts', { root: process.cwd() })
-// getmoduleGraph(
-//   '/Users/bytedance/Projects/bugs/vite-template/src/file-c.ts',
-//   { root: '/Users/bytedance/Projects/bugs/vite-template' })
-
-createModuleGraph(
-  '/Users/bytedance/Projects/ciya/test/fixtures/circular/file-a.ts',
-  { root: '/Users/bytedance/Projects/ciya/test/fixtures/circular' })
+// createModuleGraph(
+//   '/Users/bytedance/Projects/ciya/test/fixtures/circular/file-a.ts',
+//   { root: '/Users/bytedance/Projects/ciya/test/fixtures/circular' })

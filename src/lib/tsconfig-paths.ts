@@ -1,6 +1,31 @@
 import { createMatchPath, loadConfig } from 'tsconfig-paths'
-import { dirname, normalize } from 'pathe'
+import { dirname, normalize, resolve, join } from 'pathe'
 import enhancedResolve from 'enhanced-resolve'
+import { findAll } from 'tsconfck'
+
+
+// MIT License
+
+// Copyright (c) Alec Larson
+export function resolveProjectPaths(
+  projects: string[] | undefined,
+  projectRoot: string,
+  workspaceRoot: string,
+) {
+  if (projects) {
+    return projects.map((file) => {
+      if (!file.endsWith('.json')) {
+        file = join(file, 'tsconfig.json')
+      }
+      return resolve(projectRoot, file)
+    })
+  }
+  return findAll(workspaceRoot, {
+    skip(dir) {
+      return dir === 'node_modules' || dir === '.git'
+    },
+  })
+}
 
 const noOp = () => {}
 const noMatch = [undefined, false]
@@ -70,28 +95,6 @@ export async function createResolver(projectRoot: string, { exts = ['tsx'] }: Op
 
     let path = resolutionCache.get(id)
 
-    // const internalResolver = () => {
-    //   return new Promise((resolve) => {
-    //     // e.g. matchPath('@/index', undefined, undefined, exts)
-    //     path = matchPath(id, undefined, undefined, exts.map(e => `.${e}`))
-    //   })
-    //     .then(() => {
-    //       if (!path) {
-    //         // e.g. resolve('./index', { basedir: importer, extensions: exts })
-    //         path = resolveSync(id, { basedir: dirname(importer), extensions: exts.map(e => `.${e}`) })
-    //       }
-    //     })
-    //     .catch((e) => {
-    //       if (!path) {
-    //       // e.g. resolve('./index', { basedir: importer, extensions: exts })
-    //         path = resolveSync(id, { basedir: dirname(importer), extensions: exts.map(e => `.${e}`) })
-    //       }
-    //     })
-    //     .finally(() => {
-    //       resolve(path)
-    //     })
-    // }
-
     if (!path) {
       // e.g. matchPath('@/index', undefined, undefined, exts)
       path = await enhancedResolveAsync(id, importer)
@@ -100,24 +103,7 @@ export async function createResolver(projectRoot: string, { exts = ['tsx'] }: Op
         // e.g. resolve('./index', { basedir: importer, extensions: exts })
         path = matchPath(id, undefined, undefined, exts.map(e => `.${e}`))
       }
-      // path = resolveSync(id, { basedir: dirname(importer), extensions: exts.map(e => `.${e}`) })
-      // console.log('resolveSync', path)
-      // if (!path) {
-      //   // e.g. resolve('./index', { basedir: importer, extensions: exts })
-      //   path = matchPath('./index', undefined, undefined, exts.map(e => `.${e}`))
-      // }
-      // if (path) {
-      //   resolutionCache.set(id, path)
-      //   debug(`resolved:`, {
-      //     id,
-      //     importer,
-      //     resolvedId: path,
-      //     configPath,
-      //   })
-      // }
     }
     return [path, true]
   }
 }
-
-// createResolver({}, { exts: ['ts'] })

@@ -16,7 +16,6 @@ export default defineConfig([
   // an array for the `output` option, where we can specify
   // `file` and `format` for each target)
   {
-    input: 'src/index.ts',
     plugins: [
       /**
        * Bundle devDependencies, exclude dependencies
@@ -26,7 +25,7 @@ export default defineConfig([
       }),
       commonjs(),
       esbuild({
-        target: 'node14'
+        target: 'node14',
       }),
       alias({
         customResolver: resolve({ extensions: ['.tsx', '.ts'] }),
@@ -47,6 +46,35 @@ export default defineConfig([
     ],
     output: [
       { dir: 'dist', entryFileNames: '[name].cjs', format: 'cjs' },
+      { dir: 'dist', entryFileNames: '[name].mjs', format: 'es' },
+    ],
+  },
+  {
+    input: ['src/cli.ts'],
+    plugins: [
+      /**
+       * Bundle devDependencies, exclude dependencies
+       */
+      externals({
+        devDeps: false,
+      }),
+      commonjs(),
+      esbuild({
+        target: 'node14',
+      }),
+      alias({
+        customResolver: resolve({ extensions: ['.tsx', '.ts'] }),
+        entries: Object.entries({
+          '@/*': ['./src/*'],
+        }).map(([alias, value]) => ({
+          find: new RegExp(`${alias.replace('/*', '')}`),
+          replacement: path.resolve(process.cwd(), `${value[0].replace('/*', '')}`),
+        })),
+      }),
+      resolve(),
+      size(),
+    ],
+    output: [
       { dir: 'dist', entryFileNames: '[name].mjs', format: 'es' },
     ],
   },
