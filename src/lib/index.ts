@@ -4,9 +4,10 @@ import fs from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { normalize, resolve } from 'pathe'
 import { uniq } from 'lodash-es'
+import pico from 'picocolors'
 
 import { createResolver, resolveProjectPaths } from './tsconfig-paths'
-import { debug } from './utils'
+import { debug, shortPath } from './utils'
 import type { Logger } from './utils'
 
 interface Module {
@@ -45,9 +46,11 @@ export interface CreateModuleGraphOptions {
 }
 
 export const createModuleGraph = async (importer: string, { root = process.cwd(), logger }: CreateModuleGraphOptions = { root: process.cwd() }) => {
+  // Resolve root from cwd, support relative root path
   const resolvedRoot = resolve(process.cwd(), root)
   const resolvedOptions = {
-    entry: resolve(resolvedRoot, importer)
+    entry: resolve(resolvedRoot, importer),
+    root: resolvedRoot
   }
   const projects = await resolveProjectPaths(undefined, root, root)
   const moduleGraph = new Map<string, Module>()
@@ -149,7 +152,12 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
         // TODO: reporter, or log circular info
         // Skip circular
         if (m.isCircular) {
-          logger?.warn(`${urlStack.join('->')} -> ${m.file}`)
+          logger?.warn(
+            `${urlStack
+              .concat(m.file)
+              .map(url => pico.bold(pico.yellow(shortPath(url, resolvedOptions))))
+              .join(pico.cyan(' -> '))}`
+            )
           continue
         }
         await walk(m.file, urlStack)

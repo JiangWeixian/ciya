@@ -34,3 +34,7 @@ export const createLogger = (logLevel: LogLevel): Logger => {
     silent() {},
   }
 }
+
+export const shortPath = (file: string, options: { root: string }) => {
+  return file.replace(options.root, '<root>')
+}

@@ -16,8 +16,7 @@ cli
       root: options.root ?? process.cwd(),
       logger: createLogger(options.logLevel),
     }
-    const moduleGraph = await createModuleGraph(entry, resolvedOptions)
-    console.log(moduleGraph)
+    await createModuleGraph(entry, resolvedOptions)
   })
 
 cli.help()
