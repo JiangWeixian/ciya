@@ -17,20 +17,20 @@
     "email": "jiangweixian1994@gmail.com",
     "url": "https://twitter.com/jiangweixian"
   },
-  "bin": {
-    "ciya": "./bin/index.mjs"
-  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
+      "types": "./dist/exports/index.d.ts",
       "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs",
-      "types": "./dist/exports/index.d.ts"
+      "import": "./dist/index.mjs"
     }
   },
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/exports/index.d.ts",
+  "bin": {
+    "ciya": "./bin/index.mjs"
+  },
   "scripts": {
     "build:lib": "rollup -c --silent",
     "build:dts": "ttsc",
@@ -47,9 +47,7 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "**/**/*.{js,ts,tsx,vue,json}": [
-      "eslint --fix"
-    ]
+    "**/**/*.{js,ts,tsx,vue,json}": ["eslint --fix"]
   },
   "dependencies": {
     "debug": "^4.3.4",
