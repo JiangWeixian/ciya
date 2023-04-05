@@ -2,7 +2,8 @@ import { createMatchPath, loadConfig } from 'tsconfig-paths'
 import { dirname, normalize, resolve, join } from 'pathe'
 import enhancedResolve from 'enhanced-resolve'
 import { findAll } from 'tsconfck'
-
+import fs from 'node:fs'
+import { debug } from './utils'
 
 // MIT License
 
@@ -30,12 +31,22 @@ export function resolveProjectPaths(
 const noOp = () => {}
 const noMatch = [undefined, false]
 
+const addExtensions = (path: string, exts: string[]) => {
+  for (const ext of exts) {
+    if (fs.existsSync(`${path}${ext}`)) {
+      return `${path}${ext}`
+    }
+  }
+  return path
+}
+
 interface Options {
   exts: string[]
 }
 
 export async function createResolver(projectRoot: string, { exts = ['tsx'] }: Options) {
   const configLoaderResult = loadConfig(projectRoot)
+  const resolvedExts = exts.map(e => `.${e}`)
 
   if (configLoaderResult.resultType === 'failed') {
     return noOp
@@ -49,16 +60,19 @@ export async function createResolver(projectRoot: string, { exts = ['tsx'] }: Op
   )
 
   const enhancedResolver = enhancedResolve.create({
-    extensions: exts.map(e => `.${e}`),
+    extensions: resolvedExts,
   })
 
   const enhancedResolveAsync = (id: string, importer: string): Promise<string> => {
     return new Promise((resolve) => {
       enhancedResolver(dirname(importer), id, (error: any, result: any) => {
         if (error) {
-          console.error(error)
+          // throw error when resolve alias path
+          // ignore, fallback to tsconfig paths resolver
+          // console.error(error)
           resolve('')
         }
+        debug('enhancedResolveAsync: resolve %s to %s', id, result)
         resolve(result)
       })
     })
@@ -98,10 +112,13 @@ export async function createResolver(projectRoot: string, { exts = ['tsx'] }: Op
     if (!path) {
       // e.g. matchPath('@/index', undefined, undefined, exts)
       path = await enhancedResolveAsync(id, importer)
-      // console.log('enhancedResolveAsync', path, id, importer)
       if (!path) {
         // e.g. resolve('./index', { basedir: importer, extensions: exts })
-        path = matchPath(id, undefined, undefined, exts.map(e => `.${e}`))
+        path = matchPath(id, undefined, undefined, resolvedExts)
+        // https://github.com/dividab/tsconfig-paths/blob/11b774d994b897c6c8e87dda57375a285813731d/src/try-path.ts#L58-L69
+        // tsconfig-paths will remove exts from path
+        path = path && addExtensions(path, resolvedExts)
+        debug('matchPath: resolve %s to %s', id, path)
       }
     }
     return [path, true]

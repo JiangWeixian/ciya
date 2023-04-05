@@ -132,7 +132,6 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
       module.imports = imports.map(i => source.slice(i.s, i.e))
       for (const id of module.imports) {
         const resolvedId = await resolveId(id, file)
-        debug('resolve %s to %s', id, resolvedId)
         if (resolvedId && !isNodeModules(resolvedId)) {
           const m = ensureModule(resolvedId, {
             id,

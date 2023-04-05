@@ -1,2 +1,3 @@
-export { Table } from './a'
-export { name } from './b/b'
+// eslint-disable-next-line import/no-extraneous-dependencies
+export { uniq } from 'lodash-es'
+export { name } from '@/b/b'
