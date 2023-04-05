@@ -7,6 +7,7 @@ import { uniq } from 'lodash-es'
 
 import { createResolver, resolveProjectPaths } from './tsconfig-paths'
 import { debug } from './utils'
+import type { Logger } from './utils'
 
 interface Module {
   // Real filepath on disk
@@ -33,13 +34,18 @@ const isNodeModules = (url: string) => /node_modules/.test(url)
 
 export interface CreateModuleGraphOptions {
   /**
+   * @description Resolve entry file and search all available tsconfig.json from root dir
    * @default process.cwd()
    */
   root: string
+  /**
+   * @default 'silent'
+   */
+  logger?: Logger
 }
 
-export const createModuleGraph = async (importer: string, { root = process.cwd() }: CreateModuleGraphOptions) => {
-  const resolvedRoot = root
+export const createModuleGraph = async (importer: string, { root = process.cwd(), logger }: CreateModuleGraphOptions = { root: process.cwd() }) => {
+  const resolvedRoot = resolve(process.cwd(), root)
   const resolvedOptions = {
     entry: resolve(resolvedRoot, importer)
   }
@@ -57,7 +63,10 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
   parsedProjects.forEach(async (project) => {
     const projectDir = normalize(dirname(project.tsconfigFile))
     const resolver = await createResolver(project.tsconfigFile, { exts: ['tsx', 'ts', 'js', 'jsx', 'cjs', 'mjs'] })
-    const resolvers = (resolversByDir[projectDir] ||= [])
+    if (!resolversByDir[projectDir]) {
+      resolversByDir[projectDir] = []
+    }
+    const resolvers = resolversByDir[projectDir]
     resolvers.push(resolver)
   })
 
@@ -111,7 +120,7 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
     return module
   }
 
-  const dfs = async (file: string, urlStack: string[] = []) => {
+  const walk = async (file: string, urlStack: string[] = []) => {
     const module = ensureModule(file)
     // es-module get all import module first
     if (module.imported && module.imported.size === 0) {
@@ -138,16 +147,17 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
         debug('file %s url stacks %o', m.file, urlStack)
         m.isCircular = isCircular(m.file, urlStack)
         // TODO: reporter, or log circular info
+        // Skip circular
         if (m.isCircular) {
-          // Skip circular
+          logger?.warn(`${urlStack.join('->')} -> ${m.file}`)
           continue
         }
-        await dfs(m.file, urlStack)
+        await walk(m.file, urlStack)
       }
     }
   }
-  // create module graph
-  await dfs(resolvedOptions.entry)
+  // create root module graph
+  await walk(resolvedOptions.entry)
   return moduleGraph
 }
 

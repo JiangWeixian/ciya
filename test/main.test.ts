@@ -1,10 +1,12 @@
-import { welcome } from '../src'
+import { createModuleGraph } from '../src/lib/index'
 import { describe, expect, test, vi } from 'vitest'
 
-describe('index', () => {
-  test('demo part', () => {
-    console.log = vi.fn()
-    welcome()
-    expect(console.log).toHaveBeenCalledWith('hello world')
+describe('createModuleGraph', () => {
+  test('basic usage', async () => {
+    const moduleGraph = await createModuleGraph('./test/fixtures/circular/file-a.ts')
+  })
+
+  test('support relative root', async () => {
+    const moduleGraph = await createModuleGraph('./fixtures/circular/file-a.ts', { root: './test' })
   })
 })
