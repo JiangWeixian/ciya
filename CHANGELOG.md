@@ -1,5 +1,11 @@
 # ciya
 
+## 0.0.2
+
+### Patch Changes
+
+- 7c07acd: default warn loglevel
+
 ## 0.0.1
 
 ### Patch Changes
