@@ -3,7 +3,7 @@
     "target": "ES2015",
     "module": "esnext",
     "moduleResolution": "node",
-    "importHelpers": true,
+    "importHelpers": false,
     "esModuleInterop": true,
     "sourceMap": true,
     "declarationDir": "dist",
@@ -16,6 +16,7 @@
     "resolveJsonModule": true,
     "noImplicitReturns": true,
     "suppressImplicitAnyIndexErrors": true,
+    "ignoreDeprecations": "5.0",
     "noUnusedLocals": true,
     "baseUrl": ".",
     "paths": {
