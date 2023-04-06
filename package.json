@@ -31,6 +31,10 @@
   "bin": {
     "ciya": "./bin/index.mjs"
   },
+  "files": [
+    "bin",
+    "dist"
+  ],
   "scripts": {
     "build:lib": "rollup -c --silent",
     "build:dts": "ttsc",
