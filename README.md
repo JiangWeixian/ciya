@@ -9,6 +9,11 @@
 pnpm i ciya
 ```
 
+## features
+
+- Create module graph from entry file
+- Support `node` apis and cli usages
+
 ### `CLI` 
 
 ```
@@ -58,8 +63,4 @@ Resolve entry file and search all available tsconfig files from `root`, default 
 - type: `string`
 - require: `false`
 
-## features
-
-- Create module graph from entry file
-- Support `node` apis and cli usages
 
