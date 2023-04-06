@@ -7,11 +7,10 @@ specifiers:
   '@rollup/plugin-commonjs': 24.0.1
   '@rollup/plugin-node-resolve': 15.0.1
   '@types/debug': ^4.1.7
-  '@types/globrex': ^0.1.2
   '@types/lodash-es': ^4.17.7
   '@types/node': 17.0.22
-  '@types/resolve': ^1.20.2
   cac: ^6.7.14
+  ciya: ^0.0.1
   cz-emoji: 1.3.1
   debug: ^4.3.4
   enhanced-resolve: ^5.12.0
@@ -54,11 +53,10 @@ devDependencies:
   '@rollup/plugin-commonjs': 24.0.1_rollup@3.19.1
   '@rollup/plugin-node-resolve': 15.0.1_rollup@3.19.1
   '@types/debug': 4.1.7
-  '@types/globrex': 0.1.2
   '@types/lodash-es': 4.17.7
   '@types/node': 17.0.22
-  '@types/resolve': 1.20.2
   cac: 6.7.14
+  ciya: 0.0.1_typescript@4.4.3
   cz-emoji: 1.3.1
   esbuild: 0.17.14
   eslint: 8.11.0
@@ -934,10 +932,6 @@ packages:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
     dev: true
 
-  /@types/globrex/0.1.2:
-    resolution: {integrity: sha512-W+8iW69LnEae5H09PxjpmI3CdJyKUTBAoDyqWx6T5ewhX5unBHYYQsGYXlXQP8l3HE/Y71vswPAvxkJC92FQhQ==}
-    dev: true
-
   /@types/is-ci/3.0.0:
     resolution: {integrity: sha512-Q0Op0hdWbYd1iahB+IFNQcWXFq4O0Q5MwQP7uN0souuQ4rPg1vEYcnIOfr1gY+M+6rc8FGoRaBO1mOOvL29sEQ==}
     dependencies:
@@ -1559,6 +1553,22 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /ciya/0.0.1_typescript@4.4.3:
+    resolution: {integrity: sha512-mvYIkRkSSAQLUlAW/ZWovp/eYigDRlh0i0c23j5J6r9CB95pktrV4oBoiXiZZeIJodbd+gQt+5GL1l22XNSQiA==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dependencies:
+      debug: 4.3.4
+      enhanced-resolve: 5.12.0
+      es-module-lexer: 1.2.1
+      pathe: 1.1.0
+      tsconfck: 2.1.1_typescript@4.4.3
+      tsconfig-paths: 4.2.0
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+    dev: true
+
   /clean-regexp/1.0.0:
     resolution: {integrity: sha512-GfisEZEJvzKrmGWkvfhgzcz/BllN1USeqD2V6tg14OAOgaCD2Z/PUEuxnAZ/nPvmaHRG7a8y77p1T/IRQ4D1Hw==}
     engines: {node: '>=4'}
@@ -1964,7 +1974,6 @@ packages:
     dependencies:
       graceful-fs: 4.2.11
       tapable: 2.2.1
-    dev: false
 
   /enquirer/2.3.6:
     resolution: {integrity: sha512-yjNnPr315/FjS4zIsUxYguYUPP2e1NK4d7E7ZOLiyYCcbFBiTMyID+2wvm2w6+pZ/odMA7cRkjhsPbltwBOrLg==}
@@ -3625,7 +3634,6 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
-    dev: false
 
   /jsonc-eslint-parser/2.2.0:
     resolution: {integrity: sha512-x5QjzBOORd+T2EjErIxJnkOEbLVEdD1ILEeBbIJt8Eq/zUn7P7M8qdnWiNVBK5f8oxnJpc6SBHOeeIEl/swPjg==}
@@ -4478,7 +4486,6 @@ packages:
 
   /pathe/1.1.0:
     resolution: {integrity: sha512-ODbEPR0KKHqECXW1GoxdDb+AZvULmXjVPy4rt+pGo2+TnjJTIPJQSVS6N63n8T2Ip+syHhbn52OewKicV0373w==}
-    dev: false
 
   /pathval/1.1.1:
     resolution: {integrity: sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==}
@@ -5340,7 +5347,6 @@ packages:
   /tapable/2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
-    dev: false
 
   /tar/6.1.13:
     resolution: {integrity: sha512-jdIBIN6LTIe2jqzay/2vtYLlBHa3JF42ot3h1dW8Q0PaAG4v8rm0cvpVePtau5C6OKXGGcgO9q2AMNSWxiLqKw==}
@@ -5426,7 +5432,6 @@ packages:
         optional: true
     dependencies:
       typescript: 4.4.3
-    dev: false
 
   /tsconfig-paths/3.14.2:
     resolution: {integrity: sha512-o/9iXgCYc5L/JxCHPe3Hvh8Q/2xm5Z+p18PESBU6Ff33695QnCHBEjcytY2q19ua7Mbl/DavtBOLq+oG0RCL+g==}
@@ -5444,7 +5449,6 @@ packages:
       json5: 2.2.3
       minimist: 1.2.8
       strip-bom: 3.0.0
-    dev: false
 
   /tslib/1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
