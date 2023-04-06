@@ -148,7 +148,7 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
         m.urlStack = urlStack.concat([])
         debug('file %s url stacks %o', m.file, urlStack)
         m.isCircular = isCircular(m.file, urlStack)
-        // TODO: reporter, or log circular info
+        // (Should reporter?)
         // Skip circular
         if (m.isCircular) {
           logger?.warn(
@@ -167,7 +167,3 @@ export const createModuleGraph = async (importer: string, { root = process.cwd()
   await walk(resolvedOptions.entry)
   return moduleGraph
 }
-
-// createModuleGraph(
-//   '/Users/bytedance/Projects/ciya/test/fixtures/circular/file-a.ts',
-//   { root: '/Users/bytedance/Projects/ciya/test/fixtures/circular' })

@@ -94,12 +94,6 @@ export async function createResolver(projectRoot: string, { exts = ['tsx'] }: Op
       return noMatch
     }
 
-    // Respect the include/exclude properties.
-    // const relativeImporterFile = relative(configDir, importerFile)
-    // if (!isIncludedRelative(relativeImporterFile)) {
-    //   return noMatch
-    // }
-
     // Find and remove Vite's suffix (e.g. "?url") if present.
     // If the path is resolved, the suffix will be added back.
     const suffix = /\?.+$/.exec(id)?.[0]
