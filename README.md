@@ -1,7 +1,7 @@
 # ciya
 > Build **moduleGraph** and find **circular** relations. Respect `paths` in `tsconfig.json`
 
-![![npm](https://img.shields.io/npm/v/ciya.svg?style=flat-square)](https://www.npmjs.org/package/ciya) ![![npm](https://img.shields.io/npm/l/ciya.svg?style=flat-square)](https://www.npmjs.org/package/ciya)
+[![npm](https://img.shields.io/npm/v/ciya.svg?style=flat-square)](https://www.npmjs.org/package/ciya) [![npm](https://img.shields.io/npm/l/ciya.svg?style=flat-square)](https://www.npmjs.org/package/ciya)
 
 ## usage
 
